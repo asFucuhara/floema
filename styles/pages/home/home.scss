@@ -1,0 +1,88 @@
+.home {
+  @extend %cover;
+  @extend %center;
+
+  background-color: $color-contesa;
+  color: $color-quarter-spanish-white;
+  // overflow: hidden;
+  text-align: center;
+
+  &::after,
+  &::before {
+    content: '';
+    height: 24rem;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+
+  &::before {
+    background: linear-gradient(to bottom, $color-contesa 0%, rgba($color-contesa, 0) 100%);
+    top: 0;
+  }
+
+  &::after {
+    background: linear-gradient(to top, $color-contesa 0%, rgba($color-contesa, 0) 100%);
+    bottom: 0;
+  }
+}
+
+.home_wrapper {}
+
+.home__titles {
+  @extend %vertical-titles;
+
+}
+
+.home_titles_label {
+  @extend %vertical-titles__label;
+
+}
+
+.home__titles__title {
+  @extend %vertical-titles__title;
+
+}
+
+.home__gallery {
+  @extend %cover;
+  // display: none;
+
+  visibility: hidden;
+}
+
+.home__gallery__media {
+  position: absolute;
+}
+
+.home__gallery__media__image {}
+
+.home__link {
+  @extend %description-14;
+
+  align-items: center;
+  bottom: 5rem;
+  display: flex;
+  height: 6rem;
+  justify-content: center;
+  letter-spacing: 0.05rem;
+  left: 50%;
+  position: absolute;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  width: 28.8rem;
+  z-index: 2;
+
+  @include media('<=phone'){
+    bottom: 7.5rem;
+    height: 13.7rem;
+    width: 55rem;
+  }
+}
+
+.home__link__icon {
+  @extend %cover;
+
+
+}
