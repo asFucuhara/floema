@@ -3,9 +3,11 @@ import About from './pages/About'
 import Collections from './pages/Collections'
 import Detail from './pages/Detail'
 import Home from './pages/Home'
+import Preloader from './components/Preloader'
 
 class App {
   constructor () {
+    this.createPreloader()
     this.createContent()
     this.createPages()
 
@@ -22,12 +24,22 @@ class App {
 
     this.page = this.pages[this.template]
     this.page.create()
-    this.page.show()
   }
 
   createContent () {
     this.content = document.querySelector('.content')
     this.template = this.content.getAttribute('data-template')
+  }
+
+  createPreloader () {
+    this.preloader = new Preloader()
+    this.preloader.once('completed', _ => this.onPreloaded())
+  }
+
+  onPreloaded () {
+    this.preloader.destroy()
+
+    this.page.show()
   }
 
   async onChange (url) {
@@ -49,6 +61,7 @@ class App {
 
       this.page = this.pages[this.template]
       this.page.create()
+      this.addLinkListeners()
       await this.page.show()
     } else {
       console.log('error')
