@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 
-const TerserPlugin = require('terser-webpack-plugin')
+// const TerserPlugin = require('terser-webpack-plugin')
 const CopyWebPackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin')
@@ -106,10 +106,10 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: true,
+    // minimize: true,
     minimizer: [
       '...',
-      new TerserPlugin(),
+      // new TerserPlugin(),
       new ImageMinimizerPlugin({
         minimizer: {
           implementation: ImageMinimizerPlugin.imageminMinify,
