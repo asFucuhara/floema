@@ -11,7 +11,10 @@ class App {
     this.createContent()
     this.createPages()
 
+    this.addEventListeners()
     this.addLinkListeners()
+
+    this.update()
   }
 
   createPages () {
@@ -24,6 +27,8 @@ class App {
 
     this.page = this.pages[this.template]
     this.page.create()
+
+    this.onResize()
   }
 
   createContent () {
@@ -38,6 +43,7 @@ class App {
 
   onPreloaded () {
     this.preloader.destroy()
+    this.onResize()
 
     this.page.show()
   }
@@ -61,11 +67,32 @@ class App {
 
       this.page = this.pages[this.template]
       this.page.create()
+
+      this.onResize()
+
       this.addLinkListeners()
       await this.page.show()
     } else {
       console.log('error')
     }
+  }
+
+  onResize () {
+    if (this.page && this.page.onResize) {
+      this.page.onResize()
+    }
+  }
+
+  update () {
+    if (this.page && this.page.update) {
+      this.page.update()
+    }
+
+    this.frame = window.requestAnimationFrame(this.update.bind(this))
+  }
+
+  addEventListeners () {
+    window.addEventListener('resizze', this.onResize.bind(this))
   }
 
   addLinkListeners () {

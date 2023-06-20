@@ -1,4 +1,5 @@
 .collections {
+  @extend %page;
   @extend %cover;
 
   background: $color-quicksand;
