@@ -38,6 +38,10 @@ export function split ({ element, expression = ' ', append = true }) {
 }
 
 export function calculate (spans) {
+  if (!spans || spans.length === 0) {
+    return []
+  }
+
   const lines = []
   let words = []
 

@@ -92,7 +92,7 @@ class App {
   }
 
   addEventListeners () {
-    window.addEventListener('resizze', this.onResize.bind(this))
+    window.addEventListener('resize', this.onResize.bind(this))
   }
 
   addLinkListeners () {

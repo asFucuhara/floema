@@ -1,13 +1,24 @@
 import GSAP from 'gsap'
 import NormalizeWheel from 'normalize-wheel'
-import each from 'lodash/each'
+import { map, each } from 'lodash'
 import Prefix from 'prefix'
+
+import Title from '../animations/Title'
+import Label from '../animations/Label'
+import Paragraph from '../animations/Paragraph'
+import Highlight from '../animations/Highlight'
 
 export default class Page {
   constructor ({ id, element, elements }) {
     this.id = id
     this.selector = element
-    this.selectorChildren = { ...elements }
+    this.selectorChildren = {
+      ...elements,
+      animationsTitles: '[data-animation="title"]',
+      animationsLabels: '[data-animation="label"]',
+      animationsParagraph: '[data-animation="paragraph"]',
+      animationsHighlight: '[data-animation="highlight"]'
+    }
     this.transfomPrefix = Prefix('transform')
 
     this.onMouseWheelEvent = this.onMouseWheel.bind(this)
@@ -38,6 +49,33 @@ export default class Page {
         }
       }
     })
+
+    this.createAnimations()
+  }
+
+  createAnimations () {
+    this.animations = []
+    this.animationsTitles = map(
+      this.elements.animationsTitles,
+      element => new Title({ element })
+    )
+    this.animations.push(...this.animationsTitles)
+
+    this.animationsHighlight = map(
+      this.elements.animationsHighlight,
+      element => new Highlight({ element })
+    )
+    this.animations.push(...this.animationsHighlight)
+
+    this.animationsLabels = map(
+      this.elements.animationsLabels,
+      element => new Label({ element }))
+    this.animations.push(...this.animationsLabels)
+
+    this.animationsParagraph = map(
+      this.elements.animationsParagraph,
+      element => new Paragraph({ element }))
+    this.animations.push(...this.animationsParagraph)
   }
 
   addEventListeners () {
@@ -57,6 +95,8 @@ export default class Page {
     if (this.elements.wrapper) {
       this.scroll.limit = this.elements.wrapper.clientHeight - window.innerHeight
     }
+
+    each(this.animations, animation => animation.onResize())
   }
 
   update () {
