@@ -7,6 +7,8 @@
 html {
   @extend %cover;
 
+  background: $color-contesa;
+  color: $color-quarter-spanish-white;
   font-size: calc(100vw / 1920 * 10);
   line-height: 1;
   overflow: hidden;
@@ -39,6 +41,12 @@ button {
 
 img {
   vertical-align: middle;
+  transition: opacity 0.4s ease;
+  opacity: 0;
+
+  &.loaded {
+    opacity: 1;
+  }
 }
 
 .content {

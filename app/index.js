@@ -4,12 +4,14 @@ import Collections from './pages/Collections'
 import Detail from './pages/Detail'
 import Home from './pages/Home'
 import Preloader from './components/Preloader'
+import Navigation from './components/Navigation'
 
 class App {
   constructor () {
-    this.createPreloader()
     this.createContent()
+    this.createPreloader()
     this.createPages()
+    this.createNavigation()
 
     this.addEventListeners()
     this.addLinkListeners()
@@ -34,6 +36,10 @@ class App {
   createContent () {
     this.content = document.querySelector('.content')
     this.template = this.content.getAttribute('data-template')
+  }
+
+  createNavigation () {
+    this.navigation = new Navigation({ template: this.template })
   }
 
   createPreloader () {
@@ -61,6 +67,8 @@ class App {
       const divContent = div.querySelector('.content')
 
       this.template = divContent.getAttribute('data-template')
+
+      this.navigation.onChange(this.template)
 
       this.content.innerHTML = divContent.innerHTML
       this.content.setAttribute('data-template', this.template)

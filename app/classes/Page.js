@@ -3,10 +3,13 @@ import NormalizeWheel from 'normalize-wheel'
 import { map, each } from 'lodash'
 import Prefix from 'prefix'
 
+import { ColorsManager } from '../classes/Colors'
+
 import Title from '../animations/Title'
 import Label from '../animations/Label'
 import Paragraph from '../animations/Paragraph'
 import Highlight from '../animations/Highlight'
+import AsyncLoad from './AsyncLoad'
 
 export default class Page {
   constructor ({ id, element, elements }) {
@@ -17,7 +20,8 @@ export default class Page {
       animationsTitles: '[data-animation="title"]',
       animationsLabels: '[data-animation="label"]',
       animationsParagraph: '[data-animation="paragraph"]',
-      animationsHighlight: '[data-animation="highlight"]'
+      animationsHighlight: '[data-animation="highlight"]',
+      preloaders: '[data-src]'
     }
     this.transfomPrefix = Prefix('transform')
 
@@ -51,6 +55,7 @@ export default class Page {
     })
 
     this.createAnimations()
+    this.createPreloader()
   }
 
   createAnimations () {
@@ -76,6 +81,12 @@ export default class Page {
       this.elements.animationsParagraph,
       element => new Paragraph({ element }))
     this.animations.push(...this.animationsParagraph)
+  }
+
+  createPreloader () {
+    this.preloaders = map(this.elements.preloaders, element => {
+      return new AsyncLoad({ element })
+    })
   }
 
   addEventListeners () {
@@ -115,6 +126,10 @@ export default class Page {
 
   show () {
     return new Promise(resolve => {
+      ColorsManager.change({
+        backgroundColor: this.element.getAttribute('data-background'),
+        color: this.element.getAttribute('data-color')
+      })
       this.animationIn = GSAP.timeline()
       this.animationIn.fromTo(this.element, {
         autoAlpha: 0
@@ -131,12 +146,16 @@ export default class Page {
 
   hide () {
     return new Promise(resolve => {
-      this.removeEventListeners()
+      this.destroy()
       this.animationOut = GSAP.timeline()
       this.animationOut.to(this.element, {
         autoAlpha: 0,
         onComplete: resolve
       })
     })
+  }
+
+  destroy () {
+    this.removeEventListeners()
   }
 }
