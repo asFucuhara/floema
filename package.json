@@ -54,6 +54,7 @@
     "node-fetch": "^3.3.1",
     "normalize-wheel": "^1.0.1",
     "prefix": "^1.0.0",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "ua-parser-js": "^1.0.35"
   }
 }

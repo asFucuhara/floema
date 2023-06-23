@@ -7,6 +7,7 @@ const express = require('express')
 const errorhandler = require('errorhandler')
 const logger = require('morgan')
 const bodyParser = require('body-parser')
+const UAParser = require('ua-parser-js')
 
 require('dotenv').config()
 
@@ -50,9 +51,11 @@ const handleLinkResolver = (doc) => {
 }
 
 app.use((req, res, next) => {
-  // res.locals.ctx = {
-  //   prismic
-  // }
+  const ua = UAParser(req.headers['user-agent'])
+
+  res.locals.isDesktop = ua.device.type === undefined
+  res.locals.isTablet = ua.device.type === 'tablet'
+  res.locals.isPhone = ua.device.type === 'mobile'
 
   res.locals.prismicH = prismicH
   res.locals.Link = handleLinkResolver
