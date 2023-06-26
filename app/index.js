@@ -5,12 +5,14 @@ import Detail from './pages/Detail'
 import Home from './pages/Home'
 import Preloader from './components/Preloader'
 import Navigation from './components/Navigation'
+import Canvas from './components/Canvas'
 
 class App {
   constructor () {
     this.createContent()
     this.createPreloader()
     this.createPages()
+    this.createCanvas()
     this.createNavigation()
 
     this.addEventListeners()
@@ -36,6 +38,10 @@ class App {
   createContent () {
     this.content = document.querySelector('.content')
     this.template = this.content.getAttribute('data-template')
+  }
+
+  createCanvas () {
+    this.canvas = new Canvas()
   }
 
   createNavigation () {
@@ -94,12 +100,20 @@ class App {
   }
 
   onResize () {
+    if (this.canvas && this.canvas.onResize) {
+      this.canvas.onResize()
+    }
+
     if (this.page && this.page.onResize) {
       this.page.onResize()
     }
   }
 
   update () {
+    if (this.canvas && this.canvas.update) {
+      this.canvas.update()
+    }
+
     if (this.page && this.page.update) {
       this.page.update()
     }

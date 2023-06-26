@@ -31,6 +31,7 @@
     "imagemin-svgo": "^10.0.1",
     "mini-css-extract-plugin": "^2.7.6",
     "nodemon": "^2.0.22",
+    "ogl": "^0.0.117",
     "postcss-loader": "^7.3.2",
     "raw-loader": "^4.0.2",
     "sass": "^1.62.1",
