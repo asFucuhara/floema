@@ -9,6 +9,7 @@ export default class Home {
     this.group = new Transform()
     this.sizes = sizes
 
+    this.galleryElement = document.querySelector('.home__gallery')
     this.mediasElements = document.querySelectorAll('.home__gallery__media__image')
 
     this.createGeometry()
@@ -57,7 +58,24 @@ export default class Home {
   }
 
   onResize (event) {
-    map(this.medias, media => media.onResize(event))
+    this.isResizing = true
+    // this.scroll = { x: 0, y: 0 }
+    // this.x.target = 0
+    // this.y.target = 0
+
+    this.galleryBounds = this.galleryElement.getBoundingClientRect()
+
+    this.sizes = event.sizes
+    this.gallerySizes = {
+      width: this.galleryBounds.width / window.innerWidth * this.sizes.width,
+      height: this.galleryBounds.height / window.innerHeight * this.sizes.height
+    }
+
+    map(this.medias, media => media.onResize(event, this.sizes))
+
+    window.requestAnimationFrame(() => {
+      this.isResizing = false
+    })
   }
 
   onTouchDown ({ x, y }) {
@@ -76,14 +94,61 @@ export default class Home {
   onTouchUp ({ x, y }) {
   }
 
+  onWheel ({ pixelX, pixelY }) {
+    this.x.target -= pixelX
+    this.y.target -= pixelY
+  }
+
   update () {
+    if (!this.galleryBounds || this.isResizing) return
+
     this.x.current = gsap.utils.interpolate(this.x.current, this.x.target, this.x.lerp)
     this.y.current = gsap.utils.interpolate(this.y.current, this.y.target, this.y.lerp)
+
+    if (this.scroll.x < this.x.current) {
+      this.x.direction = 'right'
+    } else if (this.scroll.x > this.x.current) {
+      this.x.direction = 'left'
+    }
+
+    if (this.scroll.y < this.y.current) {
+      this.y.direction = 'bottom'
+    } else if (this.scroll.y > this.y.current) {
+      this.y.direction = 'top'
+    }
 
     this.scroll.x = this.x.current
     this.scroll.y = this.y.current
 
-    map(this.medias, media => {
+    map(this.medias, (media, index) => {
+      if (this.x.direction === 'left') {
+        const x = media.mesh.position.x + media.mesh.scale.x / 2
+        if (x < -this.sizes.width / 2) {
+          media.extra.x += this.gallerySizes.width
+          media.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
+        }
+      } else if (this.x.direction === 'right') {
+        const x = media.mesh.position.x - media.mesh.scale.x / 2
+        if (x > this.sizes.width / 2) {
+          media.extra.x -= this.gallerySizes.width
+          media.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
+        }
+      }
+
+      if (this.y.direction === 'bottom') {
+        const y = media.mesh.position.y + media.mesh.scale.y / 2
+        if (y < -this.sizes.height / 2) {
+          media.extra.y += this.gallerySizes.height
+          media.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
+        }
+      } else if (this.y.direction === 'top') {
+        const y = media.mesh.position.y - media.mesh.scale.y / 2
+        if (y > this.sizes.height / 2) {
+          media.extra.y -= this.gallerySizes.height
+          media.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
+        }
+      }
+
       media.update(this.scroll)
     })
   }

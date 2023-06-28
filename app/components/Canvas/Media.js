@@ -2,7 +2,8 @@ import { Mesh, Program, Texture } from 'ogl'
 
 import fragment from '../../shaders/plain-fragment.glsl'
 import vertex from '../../shaders/plain-vertex.glsl'
-import { windows } from 'normalize-wheel/src/UserAgent_DEPRECATED'
+
+import { gsap } from 'gsap'
 
 export default class Media {
   constructor ({ element, geometry, gl, scene, index, sizes }) {
@@ -16,6 +17,10 @@ export default class Media {
     this.createTexture()
     this.createProgram()
     this.createMesh()
+
+    this.extra = {
+      x: 0, y: 0
+    }
   }
 
   createTexture () {
@@ -49,8 +54,7 @@ export default class Media {
 
     this.mesh.setParent(this.scene)
 
-    // this.mesh.position.x += this.index * this.mesh.scale.x
-    this.mesh.position.x = 2
+    this.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
   }
 
   createBounds ({ sizes }) {
@@ -77,14 +81,14 @@ export default class Media {
     const { width } = this.sizes
 
     this.x = (this.bounds.left + x) / window.innerWidth
-    this.mesh.position.x = -(width / 2) + (this.mesh.scale.x / 2) + ((this.x) * width)
+    this.mesh.position.x = -(width / 2) + (this.mesh.scale.x / 2) + ((this.x) * width) + this.extra.x
   }
 
   updateY (y = 0) {
     const { height } = this.sizes
 
     this.y = (this.bounds.top + y) / window.innerHeight
-    this.mesh.position.y = (height / 2) - (this.mesh.scale.y / 2) - ((this.y) * height)
+    this.mesh.position.y = (height / 2) - (this.mesh.scale.y / 2) - ((this.y) * height) + this.extra.y
   }
 
   update (scroll) {
@@ -94,7 +98,12 @@ export default class Media {
     this.updateY(scroll.y)
   }
 
-  onResize (sizes) {
+  onResize (sizes, scroll) {
+    this.extra = {
+      x: 0, y: 0
+    }
     this.createBounds(sizes)
+    this.updateX(scroll.x)
+    this.updateY(scroll.y)
   }
 }
