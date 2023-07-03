@@ -12,7 +12,6 @@ export default class AsyncLoad extends Component {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           if (!this.element.src) {
-            console.log('b');
             this.element.src = this.element.getAttribute('data-src')
             this.element.onload = () => {
               this.element.classList.add('loaded')

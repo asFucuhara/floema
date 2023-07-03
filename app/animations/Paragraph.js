@@ -10,30 +10,29 @@ export default class Paragraph extends Animation {
     })
 
     split({ element: this.element, append: true })
-    split({ element: this.element, append: true })
 
-    this.elementLinesSpans = this.element.querySelectorAll('span span')
+    this.elementLinesSpans = this.element.querySelectorAll('span')
   }
 
   animateIn () {
-    gsap.set(this.element, {
-      autoAlpha: 1
-    })
-
     if (this.elementLines.length === 0) {
       return
     }
+
+    gsap.set(this.element, {
+      autoAlpha: 1
+    })
 
     gsap.fromTo(this.elementLines, {
       autoAlpha: 0,
       y: '100%'
     }, {
       autoAlpha: 1,
-      delay: 0.5,
-      duration: 1.5,
+      delay: 'random(0,1,1)',
+      duration: 'random(0,1,1)',
       stagger: {
-        axis: 'y',
-        amount: 1
+        amount: 1,
+        from: 'start'
       },
       y: '0%'
     })

@@ -2,7 +2,9 @@
   height: 56.6rem;
   margin: 20rem 0;
   overflow: hidden;
+  pointer-events: none;
   position: relative;
+  visibility: hidden;
 
 
   &:first-child{

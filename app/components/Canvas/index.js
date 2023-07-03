@@ -1,17 +1,21 @@
 import { Camera, Renderer, Transform } from 'ogl'
 
 import Home from './Home'
+import About from './About'
 
 export default class Canvas {
-  constructor () {
+  constructor ({ template }) {
+    this.template = template
+
     this.x = { start: 0, distance: 0, end: 0 }
     this.y = { start: 0, distance: 0, end: 0 }
+
     this.createRenderer()
     this.createCamera()
     this.createScene()
-    this.createHome()
 
     this.onResize()
+    this.onChangeEnd(this.template)
   }
 
   createRenderer () {
@@ -34,11 +38,56 @@ export default class Canvas {
     this.scene = new Transform()
   }
 
+  createAbout () {
+    this.about = new About({
+      gl: this.gl,
+      scene: this.scene
+    })
+  }
+
+  destroyAbout () {
+    if (this.about) {
+      this.about.destroy()
+      this.about = null
+    }
+  }
+
   createHome () {
     this.home = new Home({
       gl: this.gl,
       scene: this.scene
     })
+  }
+
+  destroyHome () {
+    if (this.home) {
+      this.home.destroy()
+      this.home = null
+    }
+  }
+
+  onChangeStart () {
+    if (this.about) {
+      this.about.hide()
+    }
+
+    if (this.home) {
+      this.home.hide()
+    }
+  }
+
+  onChangeEnd (template) {
+    if (template === 'home') {
+      this.createHome()
+    } else {
+      this.destroyHome()
+    }
+
+    if (template === 'about') {
+      this.createAbout()
+    } else {
+      this.destroyAbout()
+    }
   }
 
   onResize () {
@@ -61,6 +110,12 @@ export default class Canvas {
         sizes: this.sizes
       })
     }
+
+    if (this.about) {
+      this.about.onResize({
+        sizes: this.sizes
+      })
+    }
   }
 
   onTouchDown (event) {
@@ -71,6 +126,10 @@ export default class Canvas {
 
     if (this.home) {
       this.home.onTouchDown({ x: this.x, y: this.y })
+    }
+
+    if (this.about) {
+      this.about.onTouchDown({ x: this.x, y: this.y })
     }
   }
 
@@ -86,6 +145,10 @@ export default class Canvas {
     if (this.home) {
       this.home.onTouchMove({ x: this.x, y: this.y })
     }
+
+    if (this.about) {
+      this.about.onTouchMove({ x: this.x, y: this.y })
+    }
   }
 
   onTouchUp (event) {
@@ -100,17 +163,29 @@ export default class Canvas {
     if (this.home) {
       this.home.onTouchUp({ x: this.x, y: this.y })
     }
+
+    if (this.about) {
+      this.about.onTouchUp({ x: this.x, y: this.y })
+    }
   }
 
   onWheel (event) {
     if (this.home) {
       this.home.onWheel(event)
     }
+
+    if (this.about) {
+      this.about.onWheel(event)
+    }
   }
 
   update () {
     if (this.home) {
       this.home.update()
+    }
+
+    if (this.about) {
+      this.about.update()
     }
 
     this.renderer.render({

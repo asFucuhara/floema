@@ -43,7 +43,7 @@ class App {
   }
 
   createCanvas () {
-    this.canvas = new Canvas()
+    this.canvas = new Canvas({ template: this.template })
   }
 
   createNavigation () {
@@ -67,6 +67,7 @@ class App {
   }
 
   async onChange ({ url, push = true }) {
+    this.canvas.onChangeStart(this.template)
     await this.page.hide()
     const request = await window.fetch(url)
 
@@ -89,13 +90,15 @@ class App {
       this.content.innerHTML = divContent.innerHTML
       this.content.setAttribute('data-template', this.template)
 
+      this.canvas.onChangeEnd(this.template)
+
       this.page = this.pages[this.template]
       this.page.create()
 
       this.onResize()
 
+      this.page.show()
       this.addLinkListeners()
-      await this.page.show()
     } else {
       console.log('error')
     }

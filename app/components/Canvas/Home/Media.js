@@ -1,7 +1,7 @@
 import { Mesh, Program, Texture } from 'ogl'
 
-import fragment from '../../shaders/plain-fragment.glsl'
-import vertex from '../../shaders/plain-vertex.glsl'
+import fragment from '../../../shaders/plain-fragment.glsl'
+import vertex from '../../../shaders/plain-vertex.glsl'
 
 import { gsap } from 'gsap'
 
@@ -41,7 +41,10 @@ export default class Media {
       fragment,
       vertex,
       uniforms: {
-        tMap: { value: this.texture }
+        tMap: { value: this.texture },
+        uAlpha: {
+          value: 0
+        }
       }
     })
   }
@@ -66,6 +69,20 @@ export default class Media {
     this.updateY()
   }
 
+  show () {
+    gsap.fromTo(this.program.uniforms.uAlpha, {
+      value: 0
+    }, {
+      value: 1
+    })
+  }
+
+  hide () {
+    gsap.to(this.program.uniforms.uAlpha, {
+      value: 0
+    })
+  }
+
   updateScale () {
     const { height, width } = this.sizes
     this.height = this.bounds.height / window.innerHeight
@@ -73,8 +90,6 @@ export default class Media {
 
     this.mesh.scale.x = width * this.width
     this.mesh.scale.y = height * this.height
-
-    // console.log(this.width, this.height)
   }
 
   updateX (x = 0) {
@@ -105,5 +120,9 @@ export default class Media {
     this.createBounds(sizes)
     this.updateX(scroll.x)
     this.updateY(scroll.y)
+  }
+
+  destroy () {
+    this.mesh.setParent(null)
   }
 }

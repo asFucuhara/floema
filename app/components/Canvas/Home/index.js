@@ -12,11 +12,6 @@ export default class Home {
     this.galleryElement = document.querySelector('.home__gallery')
     this.mediasElements = document.querySelectorAll('.home__gallery__media__image')
 
-    this.createGeometry()
-    this.createGallery()
-
-    this.group.setParent(scene)
-
     this.x = {
       current: 0,
       target: 0,
@@ -38,6 +33,13 @@ export default class Home {
       x: 0,
       y: 0
     }
+
+    this.createGeometry()
+    this.createGallery()
+
+    this.group.setParent(scene)
+
+    this.show()
   }
 
   createGeometry () {
@@ -57,8 +59,16 @@ export default class Home {
     })
   }
 
+  show () {
+    map(this.medias, media => media.show())
+  }
+
+  hide () {
+    map(this.medias, media => media.hide())
+  }
+
   onResize (event) {
-    this.isResizing = true
+    if (!this.galleryElement) return
     // this.scroll = { x: 0, y: 0 }
     // this.x.target = 0
     // this.y.target = 0
@@ -72,10 +82,6 @@ export default class Home {
     }
 
     map(this.medias, media => media.onResize(event, this.sizes))
-
-    window.requestAnimationFrame(() => {
-      this.isResizing = false
-    })
   }
 
   onTouchDown ({ x, y }) {
@@ -100,7 +106,7 @@ export default class Home {
   }
 
   update () {
-    if (!this.galleryBounds || this.isResizing) return
+    if (!this.galleryBounds) return
 
     this.x.current = gsap.utils.interpolate(this.x.current, this.x.target, this.x.lerp)
     this.y.current = gsap.utils.interpolate(this.y.current, this.y.target, this.y.lerp)
@@ -150,6 +156,12 @@ export default class Home {
       }
 
       media.update(this.scroll)
+    })
+  }
+
+  destroy () {
+    map(this.medias, (media, index) => {
+      media.destroy()
     })
   }
 }
