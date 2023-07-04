@@ -179,13 +179,13 @@ export default class Canvas {
     }
   }
 
-  update () {
+  update (scroll) {
     if (this.home) {
-      this.home.update()
+      this.home.update(scroll)
     }
 
     if (this.about) {
-      this.about.update()
+      this.about.update(scroll)
     }
 
     this.renderer.render({

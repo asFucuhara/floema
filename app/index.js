@@ -147,12 +147,12 @@ class App {
   }
 
   update () {
-    if (this.canvas && this.canvas.update) {
-      this.canvas.update()
-    }
-
     if (this.page && this.page.update) {
       this.page.update()
+    }
+
+    if (this.canvas && this.canvas.update) {
+      this.canvas.update(this.page.scroll) // suggestion <- not a big fan of this passing a object property to another object by the parent
     }
 
     this.frame = window.requestAnimationFrame(this.update.bind(this))

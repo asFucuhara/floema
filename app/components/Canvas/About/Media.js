@@ -80,6 +80,24 @@ export default class Media {
     })
   }
 
+  onResize (sizes, scroll, width) {
+    this.extra = 0
+    this.widthTotal = width
+
+    this.createBounds(sizes)
+    this.updateX(scroll)
+    this.updateY(0)
+  }
+
+  updateRotation () {
+    this.mesh.rotation.z = gsap.utils.mapRange(
+      -this.sizes.width / 2,
+      this.sizes.width / 2,
+      Math.PI * 0.1,
+      -Math.PI * 0.1,
+      this.mesh.position.x)
+  }
+
   updateScale () {
     const { height, width } = this.sizes
     this.height = this.bounds.height / window.innerHeight
@@ -87,6 +105,17 @@ export default class Media {
 
     this.mesh.scale.x = width * this.width
     this.mesh.scale.y = height * this.height
+
+    // const scale = gsap.utils.mapRange(
+    //   0,
+    //   this.sizes.width / 2,
+    //   0.1,
+    //   0,
+    //   Math.abs(this.mesh.position.x)
+    // )
+
+    // this.mesh.scale.x += scale
+    // this.mesh.scale.y += scale
   }
 
   updateX (x = 0) {
@@ -101,20 +130,14 @@ export default class Media {
 
     this.y = (this.bounds.top + y) / window.innerHeight
     this.mesh.position.y = (height / 2) - (this.mesh.scale.y / 2) - ((this.y) * height)
+    this.mesh.position.y += Math.cos((this.mesh.position.x / this.sizes.width) * Math.PI * 0.1) * 40 - 40
   }
 
   update (scroll) {
     if (!this.bounds) return
 
-    this.updateX(scroll)
-    this.updateY(0)
-  }
-
-  onResize (sizes, scroll) {
-    this.extra = 0
-
-    this.createBounds(sizes)
-
+    this.updateRotation()
+    this.updateScale()
     this.updateX(scroll)
     this.updateY(0)
   }

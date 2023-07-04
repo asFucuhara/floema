@@ -71,8 +71,8 @@ export default class About {
   onWheel ({ pixelX, pixelY }) {
   }
 
-  update () {
-    map(this.galleries, gallery => gallery.update())
+  update (scroll) {
+    map(this.galleries, gallery => gallery.update(scroll))
   }
 
   destroy () {

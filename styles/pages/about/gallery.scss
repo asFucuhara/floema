@@ -1,6 +1,6 @@
 .about__gallery {
   height: 56.6rem;
-  margin: 20rem 0;
+  margin: 15rem 0;
   overflow: hidden;
   pointer-events: none;
   position: relative;
@@ -21,7 +21,7 @@
   display: flex;
   position: absolute;
   top: 50%;
-  transform: translate(-50px);
+  transform: translateY(-50%);
 }
 
 .about__gallery__media {

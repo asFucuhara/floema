@@ -20,7 +20,8 @@ export default class Gallery {
       current: 0,
       target: 0,
       last: 0,
-      lerp: 0.1
+      lerp: 0.1,
+      velocity: 1
     }
 
     this.createMedias()
@@ -58,7 +59,6 @@ export default class Gallery {
     this.bounds = this.element.getBoundingClientRect()
 
     this.sizes = event.sizes
-    console.log(event.sizes);
     this.width = this.bounds.width / window.innerWidth * this.sizes.width
 
     this.scroll.current = 0
@@ -79,25 +79,32 @@ export default class Gallery {
   onTouchUp ({ x, y }) {
   }
 
-  update () {
+  update (scroll) {
     if (!this.bounds) return
+
+    const distance = (scroll.current - scroll.target) * 0.1
+    const y = scroll.current / window.innerHeight
 
     if (this.scroll.current < this.scroll.target) {
       this.direction = 'right'
+      this.scroll.velocity = -1
     } else if (this.scroll.current > this.scroll.target) {
       this.direction = 'left'
+      this.scroll.velocity = 1
     }
+
+    this.scroll.target -= this.scroll.velocity - distance
 
     this.scroll.current = gsap.utils.interpolate(this.scroll.current, this.scroll.target, this.scroll.lerp)
 
     map(this.medias, (media, index) => {
       if (this.direction === 'left') {
-        const x = media.mesh.position.x + media.mesh.scale.x / 2
+        const x = media.mesh.position.x + media.mesh.scale.x / 2 + 0.25
         if (x < -this.sizes.width / 2) {
           media.extra += this.width
         }
       } else if (this.direction === 'right') {
-        const x = media.mesh.position.x - media.mesh.scale.x / 2
+        const x = media.mesh.position.x - media.mesh.scale.x / 2 - 0.25
         if (x > this.sizes.width / 2) {
           media.extra -= this.width
         }
@@ -107,6 +114,8 @@ export default class Gallery {
 
       // media.mesh.position.y = Math.ceil(media.mesh.position.x / this.width * Math.PI) * 25 - 1
     })
+
+    this.group.position.y = y * this.sizes.height
   }
 
   destroy () {
