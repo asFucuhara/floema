@@ -56,7 +56,7 @@ export default class Gallery {
     // this.scroll.target = 0
     // this.scroll.current = 0
 
-    this.bounds = this.element.getBoundingClientRect()
+    this.bounds = this.elementWrapper.getBoundingClientRect()
 
     this.sizes = event.sizes
     this.width = this.bounds.width / window.innerWidth * this.sizes.width
