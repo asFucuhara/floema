@@ -66,6 +66,7 @@ export default class Media {
     gsap.fromTo(this.program.uniforms.uAlpha, {
       value: 0
     }, {
+      delay: 0.5,
       value: 1
     })
   }

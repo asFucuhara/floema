@@ -65,7 +65,8 @@ export default class Media {
     gsap.fromTo(this.program.uniforms.uAlpha, {
       value: 0
     }, {
-      value: 1
+      value: 1,
+      delay: 0.5
     })
   }
 
@@ -115,6 +116,7 @@ export default class Media {
   }
 
   destroy () {
+    console.log('destroying')
     this.mesh.setParent(null)
   }
 }
