@@ -34,10 +34,32 @@ const client = prismic.createClient('asfucu-floema', {
 })
 
 const fetchDefaults = async () => {
+  const home = await client.getSingle('home')
   const preloader = await client.getSingle('preloader')
   const meta = await client.getSingle('metadata')
+  const about = await client.getSingle('about')
 
-  return { preloader, meta }
+  const collections = await client.getAllByType('collection', { fetchLinks: 'product.image' })
+
+  const assets = []
+
+  home.data.gallery.forEach(item => assets.push(item.image.url))
+
+  about.data.gallery.forEach(item => assets.push(item.images.url))
+
+  about.data.body.forEach(section => {
+    if (section.slice_type === 'galery') {
+      section.items.forEach(item => assets.push(item.image.url))
+    }
+  })
+
+  collections.forEach(collection => {
+    collection.data.products.forEach(item => {
+      assets.push(item.products_product.data.image.url)
+    })
+  })
+
+  return { preloader, meta, home, collections, about, assets }
 }
 
 const handleLinkResolver = (doc) => {
@@ -47,6 +69,10 @@ const handleLinkResolver = (doc) => {
 
   if (doc.type === 'about') {
     return '/about'
+  }
+
+  if (doc.type === 'home') {
+    return '/collections'
   }
 }
 
@@ -66,37 +92,30 @@ app.use((req, res, next) => {
 })
 
 app.get('/', async (req, res) => {
-  const { meta, preloader } = await fetchDefaults()
-  const home = await client.getSingle('home')
-  const collections = await client.getAllByType('collection', { fetchLinks: 'product.image' })
+  const { meta, preloader, home, collections, assets } = await fetchDefaults()
 
-  res.render('pages/home', { home, preloader, collections, meta })
+  res.render('pages/home', { home, preloader, collections, meta, assets })
 })
 
 app.get('/about', async (req, res) => {
-  const { meta, preloader } = await fetchDefaults()
+  const { meta, preloader, about, assets } = await fetchDefaults()
 
-  const about = await client.getSingle('about')
-
-  res.render('pages/about', { about, meta, preloader })
+  res.render('pages/about', { about, meta, preloader, assets })
 })
 
 app.get('/collections', async (req, res) => {
-  const { meta, preloader } = await fetchDefaults()
+  const { home, meta, preloader, collections, assets } = await fetchDefaults()
 
-  const collections = await client.getAllByType('collection', { fetchLinks: 'product.image' })
-  const home = await client.getSingle('home')
-
-  res.render('pages/collections', { meta, collections, home, preloader })
+  res.render('pages/collections', { meta, collections, home, preloader, assets })
 })
 
 app.get('/detail/:uid', async (req, res) => {
-  const { meta, preloader } = await fetchDefaults()
+  const { home, meta, preloader, assets } = await fetchDefaults()
 
   const { uid } = req.params
   const product = await client.getByUID('product', uid, { fetchLinks: 'collection.title' })
 
-  res.render('pages/detail', { product, meta, preloader })
+  res.render('pages/detail', { product, meta, preloader, home, assets })
 })
 
 app.listen(port, () => {

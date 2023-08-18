@@ -1,4 +1,4 @@
-import { Mesh, Program, Texture } from 'ogl'
+import { Mesh, Program } from 'ogl'
 
 import fragment from '../../../shaders/plain-fragment.glsl'
 import vertex from '../../../shaders/plain-vertex.glsl'
@@ -24,16 +24,8 @@ export default class Media {
   }
 
   createTexture () {
-    this.texture = new Texture(this.gl)
-
-    // eslint-disable-next-line no-undef
-    this.image = new Image()
-    this.image.crossOrigin = 'anonymous'
-    this.image.src = this.element.getAttribute('data-src')
-
-    this.image.onload = () => {
-      this.texture.image = this.image
-    }
+    const image = this.element
+    this.texture = window.TEXTURES[image.getAttribute('data-src')]
   }
 
   createProgram () {

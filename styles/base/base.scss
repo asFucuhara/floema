@@ -40,6 +40,12 @@ button {
   cursor: pointer;
 }
 
+canvas {
+  position: relative;
+  pointer-events: none;
+  z-index: z('canvas');
+}
+
 img {
   vertical-align: middle;
   transition: opacity 0.4s ease;

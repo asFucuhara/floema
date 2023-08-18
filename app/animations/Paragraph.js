@@ -9,33 +9,36 @@ export default class Paragraph extends Animation {
       elements
     })
 
-    split({ element: this.element, append: true })
-
-    this.elementLinesSpans = this.element.querySelectorAll('span')
+    this.elementLinesSpans = split({ element: this.element, append: true })
   }
 
   animateIn () {
-    if (this.elementLines.length === 0) {
-      return
-    }
-
-    gsap.set(this.element, {
-      autoAlpha: 1
+    this.timelineIn = gsap.timeline({
+      delay: 0.5
     })
 
-    gsap.fromTo(this.elementLines, {
-      autoAlpha: 0,
-      y: '100%'
-    }, {
+    this.timelineIn.to(this.element, {
       autoAlpha: 1,
-      delay: 'random(0,1,1)',
-      duration: 'random(0,1,1)',
-      stagger: {
-        amount: 1,
-        from: 'start'
-      },
-      y: '0%'
+      duration: 1
     })
+
+    // gsap.set(this.element, {
+    //   autoAlpha: 1
+    // })
+
+    // gsap.fromTo(this.elementLines, {
+    //   autoAlpha: 0,
+    //   y: '100%'
+    // }, {
+    //   autoAlpha: 1,
+    //   delay: 'random(0,1,1)',
+    //   duration: 'random(0,1,1)',
+    //   stagger: {
+    //     amount: 1,
+    //     from: 'start'
+    //   },
+    //   y: '0%'
+    // })
   }
 
   animateOut () {
