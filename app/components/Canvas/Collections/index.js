@@ -5,10 +5,12 @@ import { gsap } from 'gsap'
 import Prefix from 'prefix'
 
 export default class Collections {
-  constructor ({ gl, scene, sizes }) {
+  constructor ({ gl, scene, sizes, transition }) {
+    this.id = 'collections'
     this.gl = gl
     this.group = new Transform()
     this.sizes = sizes
+    this.transition = transition
 
     this.transformPrefix = Prefix('transform')
 
@@ -55,6 +57,10 @@ export default class Collections {
   }
 
   show () {
+    if (this.transition) {
+      this.transition.animate(this.medias[0].mesh, () => {
+      })
+    }
     map(this.medias, media => media.show())
   }
 
@@ -127,14 +133,15 @@ export default class Collections {
 
     this.scroll.last = this.scroll.current
 
-    map(this.medias, (media, index) => {
-      media.update(this.scroll.current)
-    })
     const index = Math.floor(Math.abs(this.scroll.current / this.scroll.limit) * this.medias.length)
 
     if (this.index !== index) {
       this.onChange(index)
     }
+
+    map(this.medias, (media, index) => {
+      media.update(this.scroll.current, this.index)
+    })
   }
 
   destroy () {

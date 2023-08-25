@@ -1,12 +1,12 @@
 import { Mesh, Program } from 'ogl'
 
-import fragment from '../../../shaders/plain-fragment.glsl'
-import vertex from '../../../shaders/plain-vertex.glsl'
+import fragment from '../../../shaders/collections-fragment.glsl'
+import vertex from '../../../shaders/collections-vertex.glsl'
 
 import { gsap } from 'gsap'
 
 export default class Media {
-  constructor({ element, geometry, gl, scene, index, sizes }) {
+  constructor ({ element, geometry, gl, scene, index, sizes }) {
     this.element = element
     this.geometry = geometry
     this.gl = gl
@@ -21,15 +21,17 @@ export default class Media {
     this.extra = {
       x: 0, y: 0
     }
+
+    this.opacity = { current: 0, target: 0, lerp: 0.1, multiplier: 0 }
   }
 
-  createTexture() {
+  createTexture () {
     const image = this.element.querySelector('img')
 
     this.texture = window.TEXTURES[image.getAttribute('data-src')]
   }
 
-  createProgram() {
+  createProgram () {
     this.program = new Program(this.gl, {
       fragment,
       vertex,
@@ -42,7 +44,7 @@ export default class Media {
     })
   }
 
-  createMesh() {
+  createMesh () {
     this.mesh = new Mesh(this.gl, {
       geometry: this.geometry,
       program: this.program
@@ -53,7 +55,7 @@ export default class Media {
     // this.mesh.rotation.z = gsap.utils.random(-Math.PI * 0.03, Math.PI * 0.03)
   }
 
-  createBounds({ sizes }) {
+  createBounds ({ sizes }) {
     this.sizes = sizes
     this.bounds = this.element.getBoundingClientRect()
 
@@ -62,22 +64,21 @@ export default class Media {
     this.updateY()
   }
 
-  show() {
-    gsap.fromTo(this.program.uniforms.uAlpha, {
-      value: 0
+  show () {
+    gsap.fromTo(this.opacity, {
+      multiplier: 0
     }, {
-      delay: 0.5,
-      value: 1
+      multiplier: 1
     })
   }
 
-  hide() {
-    gsap.to(this.program.uniforms.uAlpha, {
-      value: 0
+  hide () {
+    gsap.to(this.opacity, {
+      multiplier: 0
     })
   }
 
-  updateScale() {
+  updateScale () {
     const { height, width } = this.sizes
     this.height = this.bounds.height / window.innerHeight
     this.width = this.bounds.width / window.innerWidth
@@ -86,28 +87,30 @@ export default class Media {
     this.mesh.scale.y = height * this.height
   }
 
-  updateX(x = 0) {
+  updateX (x = 0) {
     const { width } = this.sizes
 
     this.x = (this.bounds.left + x) / window.innerWidth
     this.mesh.position.x = -(width / 2) + (this.mesh.scale.x / 2) + ((this.x) * width) + this.extra.x
   }
 
-  updateY(y = 0) {
+  updateY (y = 0) {
     const { height } = this.sizes
 
     this.y = (this.bounds.top + y) / window.innerHeight
     this.mesh.position.y = (height / 2) - (this.mesh.scale.y / 2) - ((this.y) * height) + this.extra.y
   }
 
-  update(scroll) {
+  update (scroll, selected) {
     if (!this.bounds) return
 
     this.updateX(scroll)
     this.updateY()
+
+    this.program.uniforms.uAlpha.value = this.opacity.multiplier
   }
 
-  onResize(sizes, scroll) {
+  onResize (sizes, scroll) {
     this.extra = {
       x: 0, y: 0
     }
@@ -116,7 +119,7 @@ export default class Media {
     this.updateY(scroll.y)
   }
 
-  destroy() {
+  destroy () {
     this.mesh.setParent(null)
   }
 }

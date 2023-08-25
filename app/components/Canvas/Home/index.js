@@ -4,7 +4,7 @@ import Media from './Media'
 import { gsap } from 'gsap'
 
 export default class Home {
-  constructor ({ gl, scene, sizes }) {
+  constructor({ gl, scene, sizes }) {
     this.gl = gl
     this.group = new Transform()
     this.sizes = sizes
@@ -22,6 +22,12 @@ export default class Home {
       current: 0,
       target: 0,
       lerp: 0.1
+    }
+
+    this.speed = {
+      current: 0,
+      target: 0,
+      lerp: 0.3
     }
 
     this.scrollCurrent = {
@@ -42,11 +48,14 @@ export default class Home {
     this.show()
   }
 
-  createGeometry () {
-    this.geometry = new Plane(this.gl)
+  createGeometry() {
+    this.geometry = new Plane(this.gl, {
+      heightSegments: 20,
+      widthSegments: 20
+    })
   }
 
-  createGallery () {
+  createGallery() {
     this.medias = map(this.mediasElements, (element, index) => {
       return new Media({
         element,
@@ -59,15 +68,15 @@ export default class Home {
     })
   }
 
-  show () {
+  show() {
     map(this.medias, media => media.show())
   }
 
-  hide () {
+  hide() {
     map(this.medias, media => media.hide())
   }
 
-  onResize (event) {
+  onResize(event) {
     if (!this.galleryElement) return
     // this.scroll = { x: 0, y: 0 }
     // this.x.target = 0
@@ -84,12 +93,13 @@ export default class Home {
     map(this.medias, media => media.onResize(event, this.sizes))
   }
 
-  onTouchDown ({ x, y }) {
+  onTouchDown({ x, y }) {
+    this.speed.target = 0.5
     this.scrollCurrent.x = this.scroll.x
     this.scrollCurrent.y = this.scroll.y
   }
 
-  onTouchMove ({ x, y }) {
+  onTouchMove({ x, y }) {
     const xDistance = x.start - x.end
     const yDistance = y.start - y.end
 
@@ -97,16 +107,22 @@ export default class Home {
     this.y.target = this.scrollCurrent.y - yDistance
   }
 
-  onTouchUp ({ x, y }) {
+  onTouchUp({ x, y }) {
+    this.speed.target = 0
   }
 
-  onWheel ({ pixelX, pixelY }) {
+  onWheel({ pixelX, pixelY }) {
     this.x.target -= pixelX
     this.y.target -= pixelY
   }
 
-  update () {
+  update() {
     if (!this.galleryBounds) return
+
+    const a = this.x.target - this.x.current
+    const b = this.y.target - this.y.current
+
+    this.speed.current = gsap.utils.interpolate(this.speed.current, this.speed.target, this.speed.lerp)
 
     this.x.current = gsap.utils.interpolate(this.x.current, this.x.target, this.x.lerp)
     this.y.current = gsap.utils.interpolate(this.y.current, this.y.target, this.y.lerp)
@@ -125,6 +141,7 @@ export default class Home {
 
     this.scroll.x = this.x.current
     this.scroll.y = this.y.current
+
 
     map(this.medias, (media, index) => {
       if (this.x.direction === 'left') {
@@ -155,11 +172,11 @@ export default class Home {
         }
       }
 
-      media.update(this.scroll)
+      media.update(this.scroll, this.speed.current)
     })
   }
 
-  destroy () {
+  destroy() {
     map(this.medias, (media, index) => {
       media.destroy()
     })
